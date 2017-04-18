@@ -1,0 +1,79 @@
+body
+  .l-carousel
+    margin-left: auto
+    margin-right: auto
+  .p-carousel
+    position: relative
+    width: 640px
+    height: 360px
+  ._p-Btn
+    width: 24px
+    height: 24px
+    color: white
+    position: absolute
+    top: 50%
+    text-align: center
+    margin-top: auto
+    margin-bottom: auto
+    cursor: pointer
+    z-index: 3
+    overflow: hidden
+    &.is-hidden
+      display: none
+  .p-leftBtn
+    @extend ._p-Btn
+    left: 10px
+  .p-rightBtn
+    @extend ._p-Btn
+    right: 10px
+  .p-images-wrapper
+    overflow: hidden
+  .p-images
+    width: 1920px
+    height: 100%
+    display: flex
+    position: relative
+    transform: translateX(-640px)
+  .p-image
+    display: none
+    width: 640px
+    height: 100%
+    &.is-active
+      display: block
+      position: absolute
+      left: 640px
+    &.is-left
+      display: block
+      position: absolute
+      left: 0
+    &.is-right
+      display: block
+      position: absolute
+      left: 1280px
+    &._is-sliding
+      display: block
+      transition: transform 1s
+    &.is-sliding-rtoc
+      @extend ._is-sliding
+      position: absolute
+      z-index: 2
+      transform: translateX(-100%)
+    &.is-sliding-ctol
+      @extend ._is-sliding
+      position: absolute
+      z-index: 1
+      left: 640px
+      transform: translateX(-100%)
+    &.is-sliding-ctor
+      @extend ._is-sliding
+      position: absolute
+      z-index: 1
+      left: 640px
+      transform: translateX(100%)
+    &.is-sliding-ltoc
+      @extend ._is-sliding
+      z-index: 2
+      transform: translateX(100%)
+    img
+      height: 100%
+      width: 100%
