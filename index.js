@@ -81,13 +81,17 @@ var Carousel = {
     Carousel.state = {
       isAlready: true
     };
-    this.setEventListener();
+    Carousel.config.isInfinite = true;
+    if (!Carousel.config.isInfinite) {
+      document.getElementById('p-leftBtn').classList.add('is-hidden');
+    }
+    Carousel.setEventListener();
   },
   setEventListener: function setEventListener() {
     var leftArrow = document.getElementById('p-leftBtn');
-    leftArrow.addEventListener('click', this.clickLeftArrow, false);
+    leftArrow.addEventListener('click', Carousel.clickLeftArrow, false);
     var rightArrow = document.getElementById('p-rightBtn');
-    rightArrow.addEventListener('click', this.clickRightArrow, false);
+    rightArrow.addEventListener('click', Carousel.clickRightArrow, false);
   },
   clickLeftArrow: function clickLeftArrow() {
     if (!Carousel.state.isAlready) return;
@@ -105,7 +109,7 @@ var Carousel = {
     var _shownId = shownId;
     var towardId = Carousel.getTowardId(_shownId, towardOpt);
     if (_shownId !== towardId) {
-      Carousel.changeShownImage(_shownId, towardId);
+      Carousel.changeShownImage(_shownId, towardId, towardOpt);
     }
   },
   _getIndexIds: function _getIndexIds() {
@@ -120,9 +124,9 @@ var Carousel = {
     var rightArrow = document.getElementById('p-rightBtn');
     var leftArrow = document.getElementById('p-leftBtn');
     var indexIds = Carousel.config.indexIds;
-    if (towardId === indexIds[indexIds.length - 1]) {
+    if (!Carousel.config.isInfinite && towardId === indexIds[indexIds.length - 1]) {
       rightArrow.classList.add('is-hidden');
-    } else if (towardId === indexIds[0]) {
+    } else if (!Carousel.config.isInfinite && towardId === indexIds[0]) {
       leftArrow.classList.add('is-hidden');
     } else {
       rightArrow.classList.remove('is-hidden');
@@ -135,20 +139,20 @@ var Carousel = {
     var shownIndex = _indexIds.indexOf(_shownId);
     var towardIndex = -1;
     if (towardOpt === 'former' && shownIndex === 0) {
-      towardIndex = shownIndex;
+      towardIndex = Carousel.config.isInfinite ? _indexIds.length - 1 : shownIndex;
     } else if (towardOpt === 'latter' && shownIndex === _indexIds.length - 1) {
-      towardIndex = shownIndex;
+      towardIndex = Carousel.config.isInfinite ? 0 : shownIndex;
     } else {
       towardIndex = towardOpt === 'former' ? shownIndex - 1 : shownIndex + 1;
     }
     return _indexIds[towardIndex];
   },
-  changeShownImage: function changeShownImage(shownId, towardId) {
+  changeShownImage: function changeShownImage(shownId, towardId, moveDir) {
     var _shownId = shownId;
     var _towardId = towardId;
     var shownImage = document.getElementById(_shownId);
     var towardImage = document.getElementById(_towardId);
-    if (shownId < towardId) {
+    if (moveDir === 'latter') {
       // slide to left
       Carousel.state.isAlready = false;
       towardImage.classList.add('is-right');
@@ -165,7 +169,7 @@ var Carousel = {
           Carousel.state.isAlready = true;
         }, 1000);
       }, 10);
-    } else if (shownId > towardId) {
+    } else if (moveDir === 'former') {
       // slide to right
       Carousel.state.isAlready = false;
       towardImage.classList.add('is-left');

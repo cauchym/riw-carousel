@@ -6,13 +6,17 @@ const Carousel = {
     Carousel.state = {
       isAlready: true,
     }
-    this.setEventListener();
+    Carousel.config.isInfinite = true;
+    if (!Carousel.config.isInfinite) {
+      document.getElementById('p-leftBtn').classList.add('is-hidden');
+    }
+    Carousel.setEventListener();
   },
   setEventListener() {
     const leftArrow = document.getElementById('p-leftBtn');
-    leftArrow.addEventListener('click', this.clickLeftArrow, false);
+    leftArrow.addEventListener('click', Carousel.clickLeftArrow, false);
     const rightArrow = document.getElementById('p-rightBtn');
-    rightArrow.addEventListener('click', this.clickRightArrow, false);
+    rightArrow.addEventListener('click', Carousel.clickRightArrow, false);
   },
   clickLeftArrow() {
     if (!Carousel.state.isAlready) return;
@@ -30,7 +34,7 @@ const Carousel = {
     const _shownId = shownId;
     const towardId = Carousel.getTowardId(_shownId, towardOpt);
     if(_shownId !== towardId) {
-      Carousel.changeShownImage(_shownId, towardId);
+      Carousel.changeShownImage(_shownId, towardId, towardOpt);
     }
   },
   _getIndexIds() {
@@ -45,9 +49,9 @@ const Carousel = {
     const rightArrow = document.getElementById('p-rightBtn');
     const leftArrow = document.getElementById('p-leftBtn');
     const indexIds = Carousel.config.indexIds;
-    if(towardId === indexIds[indexIds.length-1]){
+    if(!Carousel.config.isInfinite && towardId === indexIds[indexIds.length-1]){
       rightArrow.classList.add('is-hidden');
-    }else if(towardId === indexIds[0]){
+    }else if(!Carousel.config.isInfinite && towardId === indexIds[0]){
       leftArrow.classList.add('is-hidden');
     }else{
       rightArrow.classList.remove('is-hidden');
@@ -60,20 +64,20 @@ const Carousel = {
     const shownIndex = _indexIds.indexOf(_shownId);
     let towardIndex  = -1;
     if (towardOpt === 'former' && shownIndex === 0) {
-      towardIndex = shownIndex;
+      towardIndex = Carousel.config.isInfinite ? (_indexIds.length - 1) : shownIndex;
     } else if (towardOpt === 'latter' && shownIndex === (_indexIds.length - 1)) {
-      towardIndex = shownIndex;
+      towardIndex = Carousel.config.isInfinite ? 0 : shownIndex;
     } else {
       towardIndex = (towardOpt === 'former') ? (shownIndex - 1) : (shownIndex + 1);
     }
     return _indexIds[towardIndex];
   },
-  changeShownImage(shownId, towardId) {
+  changeShownImage(shownId, towardId, moveDir) {
     const _shownId = shownId;
     const _towardId = towardId;
     const shownImage = document.getElementById(_shownId);
     const towardImage = document.getElementById(_towardId);
-    if (shownId < towardId) {
+    if (moveDir === 'latter') {
       // slide to left
       Carousel.state.isAlready = false;
       towardImage.classList.add('is-right');
@@ -90,7 +94,7 @@ const Carousel = {
           Carousel.state.isAlready = true;
         }, 1000);
       }, 10);
-    } else if (shownId > towardId) {
+    } else if (moveDir === 'former') {
       // slide to right
       Carousel.state.isAlready = false;
       towardImage.classList.add('is-left');
